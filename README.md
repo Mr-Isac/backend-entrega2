@@ -4,18 +4,22 @@
 
 Proyecto backend desarrollado como entrega final del curso de Backend.
 
-La aplicación consiste en una API de ecommerce que permite gestionar productos y carritos utilizando **MongoDB como sistema de persistencia principal**.
+La aplicación consiste en una API de ecommerce que permite gestionar productos y carritos utilizando **MongoDB Atlas como sistema de persistencia principal**.
 
-Durante esta entrega se realizó la migración de persistencia desde archivos JSON hacia MongoDB Atlas utilizando Mongoose.
+Durante esta entrega se realizó la migración de persistencia desde archivos JSON hacia MongoDB utilizando Mongoose.
 
-Se implementaron funcionalidades avanzadas para productos:
+Se implementaron funcionalidades para:
 
-- Paginación
-- Filtros mediante query params
-- Ordenamiento por precio
-- Búsqueda por categoría y disponibilidad
-
-Además, se desarrolló una gestión completa de carritos utilizando referencias entre documentos mediante ObjectId y consultas con `populate()`.
+- Gestión de productos.
+- Gestión de carritos.
+- Persistencia en MongoDB.
+- Paginación de productos.
+- Filtros mediante query params.
+- Ordenamiento por precio.
+- Referencias entre documentos utilizando ObjectId.
+- Consulta de productos dentro de carritos mediante `populate()`.
+- Vistas utilizando Express Handlebars.
+- Actualización de productos en tiempo real mediante Socket.io.
 
 Repositorio del proyecto:
 
@@ -62,7 +66,7 @@ npm install
 
 El proyecto utiliza MongoDB Atlas como sistema de persistencia.
 
-La conexión a la base de datos se realiza mediante variables de entorno utilizando un archivo `.env`.
+La conexión se realiza mediante variables de entorno utilizando un archivo `.env`.
 
 El proyecto incluye el archivo `.env` con la configuración necesaria para conectarse a la base de datos utilizada durante el desarrollo y pruebas.
 
@@ -102,6 +106,38 @@ El servidor estará disponible en:
 ```
 http://localhost:8080
 ```
+
+---
+
+# Importante sobre las vistas
+
+La ruta raíz:
+
+```
+GET /
+```
+
+no corresponde al listado de productos, por lo que al acceder directamente a:
+
+```
+http://localhost:8080/
+```
+
+puede no visualizarse contenido.
+
+Para acceder al listado de productos se debe ingresar a:
+
+```
+http://localhost:8080/products
+```
+
+o mediante la ruta:
+
+```
+GET /products
+```
+
+Esta es la vista principal de productos de la aplicación.
 
 ---
 
@@ -151,7 +187,7 @@ Para obtener la información completa de cada producto asociado se utiliza:
 populate();
 ```
 
-De esta manera se almacena únicamente el identificador del producto, pero al consultar el carrito se muestran todos sus datos.
+Esto permite guardar únicamente el identificador del producto y obtener todos sus datos al consultar el carrito.
 
 ---
 
@@ -163,7 +199,7 @@ De esta manera se almacena únicamente el identificador del producto, pero al co
 GET /api/products
 ```
 
-Este endpoint permite recibir parámetros mediante query params.
+Permite recibir parámetros mediante query params.
 
 ---
 
@@ -177,12 +213,6 @@ Ejemplo:
 GET /api/products?limit=5
 ```
 
-Por defecto:
-
-```
-limit = 10
-```
-
 ---
 
 ## Page
@@ -193,12 +223,6 @@ Ejemplo:
 
 ```
 GET /api/products?page=2
-```
-
-Por defecto:
-
-```
-page = 1
 ```
 
 ---
@@ -239,7 +263,7 @@ GET /api/products?query=true
 
 ---
 
-La respuesta del endpoint contiene:
+La respuesta del endpoint incluye:
 
 - status
 - payload
@@ -302,7 +326,7 @@ POST /api/carts
 GET /api/carts/:cid
 ```
 
-Obtiene únicamente los productos pertenecientes al carrito solicitado.
+Obtiene los productos pertenecientes al carrito solicitado.
 
 Los productos son obtenidos mediante `populate()`.
 
@@ -326,8 +350,6 @@ Si el producto ya existe dentro del carrito, aumenta su cantidad.
 PUT /api/carts/:cid
 ```
 
-Recibe un arreglo completo de productos.
-
 Ejemplo:
 
 ```json
@@ -349,8 +371,6 @@ Ejemplo:
 PUT /api/carts/:cid/products/:pid
 ```
 
-Permite modificar únicamente la cantidad de un producto dentro del carrito.
-
 ---
 
 ## Eliminar producto específico del carrito
@@ -358,8 +378,6 @@ Permite modificar únicamente la cantidad de un producto dentro del carrito.
 ```
 DELETE /api/carts/:cid/products/:pid
 ```
-
-Elimina únicamente el producto seleccionado.
 
 ---
 
@@ -369,11 +387,11 @@ Elimina únicamente el producto seleccionado.
 DELETE /api/carts/:cid
 ```
 
-Elimina todos los productos almacenados dentro del carrito.
-
 ---
 
 # Vistas con Handlebars
+
+La aplicación utiliza Express Handlebars para renderizar vistas.
 
 ## Productos
 
@@ -383,12 +401,18 @@ Ruta:
 GET /products
 ```
 
+Vista disponible en:
+
+```
+http://localhost:8080/products
+```
+
 Permite visualizar:
 
-- listado de productos
-- información del producto
-- paginación
-- botón para agregar productos al carrito
+- listado de productos.
+- información del producto.
+- paginación.
+- botón para agregar productos al carrito.
 
 ---
 
@@ -400,7 +424,13 @@ Ruta:
 GET /carts/:cid
 ```
 
-Permite visualizar únicamente los productos pertenecientes a un carrito específico.
+Permite visualizar los productos pertenecientes a un carrito específico.
+
+El identificador del carrito corresponde al creado mediante:
+
+```
+POST /api/carts
+```
 
 ---
 
@@ -410,9 +440,9 @@ Se utiliza Socket.io para actualización de productos en tiempo real.
 
 Funcionalidades:
 
-- Crear productos
-- Eliminar productos
-- Actualizar listado automáticamente
+- Crear productos.
+- Eliminar productos.
+- Actualizar automáticamente el listado.
 
 ---
 
